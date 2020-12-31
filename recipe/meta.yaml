@@ -1,0 +1,105 @@
+{% set name = "tensorflow_macos" %}
+{% set version = "0.1a0" %}
+{% set build_num = "1" %}
+{% if target_platform == "osx-64" %}
+{% set arch = "x86_64" %}
+{% else %}
+{% set arch = "arm64" %}
+{% endif %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/apple/tensorflow_macos/releases/download/v0.1alpha0/tensorflow_macos-0.1alpha0.tar.gz
+
+build:
+  number: {{ build_num }}
+
+outputs:
+  - name: tensorflow-addons
+    version: 0.11.2
+    build:
+      number: {{ build_num }}
+      binary_relocation: false
+      activate_in_script: true
+      detect_binary_files_with_prefix: False
+      string: tensorflow_macos_{{ version }}_mlcompute_py38_{{ build_num }}
+      script:
+        - cp {{ SRC_DIR }}/{{ arch }}/tensorflow_addons-0.11.2+mlcompute-cp38-cp38-macosx_11_0_{{ arch }}.whl {{ SRC_DIR }}/{{ arch }}/tensorflow_addons-0.11.2+mlcompute-cp38-cp38-macosx_10_9_{{ arch }}.whl   # [osx and x86_64]
+        -  $PYTHON -m pip install --upgrade -t "{{ SP_DIR }}" --no-dependencies --force "{{ SRC_DIR }}/{{ arch }}/tensorflow_addons-0.11.2+mlcompute-cp38-cp38-macosx_10_9_{{ arch }}.whl"  # [osx and x86_64]
+        -  $PYTHON -m pip install --upgrade -t "{{ SP_DIR }}" --no-dependencies --force "{{ SRC_DIR }}/{{ arch }}/tensorflow_addons-0.11.2+mlcompute-cp38-cp38-macosx_11_0_{{ arch }}.whl"  # [osx and arm64]
+    requirements:
+      build:
+        - cross-python_{{ target_platform }}  # [build_platform != target_platform]
+        - python 3.8
+        - pip
+      host:
+        - python 3.8
+        - pip
+      run:
+        - python 3.8
+        - pip
+        - typeguard
+        - __osx >=11.0
+        - tensorflow 2.4.rc0 tensorflow_macos_{{ version }}_mlcompute_py38_{{ build_num }}
+
+  - name: tensorflow
+    version: 2.4.rc0
+    build:
+      number: {{ build_num }}
+      binary_relocation: false
+      activate_in_script: true
+      detect_binary_files_with_prefix: False
+      string: tensorflow_macos_{{ version }}_mlcompute_py38_{{ build_num }}
+      script:
+        - cp {{ SRC_DIR }}/{{ arch }}/tensorflow_macos-{{ version }}-cp38-cp38-macosx_11_0_x86_64.whl {{ SRC_DIR }}/{{ arch }}/tensorflow_macos-{{ version }}-cp38-cp38-macosx_11_0_x86_64.whl  # [osx and x86_64]
+        - $PYTHON -m pip install --upgrade -t "{{ SP_DIR }}" --no-dependencies --force "{{ SRC_DIR }}/{{ arch }}/tensorflow_macos-{{ version }}-cp38-cp38-macosx_10_9_{{ arch }}.whl"  # [osx and x86_64]
+        - $PYTHON -m pip install --upgrade -t "{{ SP_DIR }}" --no-dependencies --force "{{ SRC_DIR }}/{{ arch }}/tensorflow_macos-{{ version }}-cp38-cp38-macosx_11_0_{{ arch }}.whl"  # [osx and arm64]
+    requirements:
+      build:
+        - cross-python_{{ target_platform }}  # [build_platform != target_platform]
+        - python 3.8
+        - pip
+      host:
+        - python 3.8
+        - pip
+      run:
+        - python 3.8
+        - pip
+        - absl-py
+        - astunparse
+        - python-flatbuffers
+        - gast
+        - google-pasta
+        - keras-preprocessing
+        - opt_einsum
+        - protobuf
+        - tensorflow-estimator
+        - termcolor
+        - typing_extensions
+        - wrapt
+        - wheel
+        - tensorboard
+        - typeguard
+        - numpy
+        - scipy
+        - h5py
+        - grpcio
+        - __osx >=11.0
+
+test:
+  imports:
+    - tensorflow
+
+about:
+  home: https://github.com/apple/tensorflow_macos
+  license: AML
+  license_family: MIT
+  license_file: LICENSE.txt
+  description: Mac-optimized TensorFlow and TensorFlow Addons
+
+extra:
+  recipe-maintainers:
+    - isuruf
