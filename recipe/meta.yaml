@@ -1,6 +1,6 @@
 {% set name = "tensorflow_macos" %}
-{% set version = "0.1a0" %}
-{% set build_num = "1" %}
+{% set version = "0.1a1" %}
+{% set build_num = "0" %}
 {% if target_platform == "osx-64" %}
 {% set arch = "x86_64" %}
 {% else %}
@@ -12,7 +12,7 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/apple/tensorflow_macos/releases/download/v0.1alpha0/tensorflow_macos-0.1alpha0.tar.gz
+  url: https://github.com/apple/tensorflow_macos/releases/download/v0.1alpha1/tensorflow_macos-0.1alpha1.tar.gz
 
 build:
   number: {{ build_num }}
